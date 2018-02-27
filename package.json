@@ -1,0 +1,28 @@
+{
+  "name": "speechmatch",
+  "version": "0.5.0",
+  "description": "Match words by the pronunciation instead of by alphabet",
+  "main": "parser_generate.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chai": "^4.1.1",
+    "@types/mocha": "^2.2.46",
+    "@types/node": "^8.5.1",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0",
+    "prettier": "1.11.0",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  },
+  "author": "William Ng",
+  "license": "ISC",
+  "scripts": {
+    "start": "npm run build && node dist/fuzzy_match.js",
+    "build": "npm run build-ts",
+    "build-ts": "tsc",
+    "prettier": "prettier --write \"{src/**/*,*}.ts\"",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
+  }
+}
