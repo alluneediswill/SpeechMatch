@@ -13,29 +13,33 @@ In another example, valid input are
 1. `Red wine`
 2. `Madeline`
 
-while speech recognized input is: `Mad line`
+Intepreted speech input is: `Mad line`.
 `Madeline` is only 1 character difference. But in pronunciation, `Red wine` could be a better choice 
 
 ---
 
 This tool translates the text into the ARPAbets, the phonetic representation of the text, before comparing them. For example:
 
+Word | Pronunciation
+:---:|:---:
 `brake` | ["B", "R", "EY1", "K"]
 `break` | ["B", "R", "EY1", "K"]
 `beak` | ["B", "IY1", "K"]
-
 `Red wine` | ["R", "EH1", "D", "/", "W", "AY1", "N"]
 `Mad Line` | ["M", "AE1", "D", "/", "L", "AY1", "N"]
 `Madeline` | ["M", "AE1", "D", "AH0", "L", "IH0", "N"]
 
-There are a few different types of arpabets
-vowel | AE AH EH IH IY OW OY UH ...
-stop | B D G K P T 
-affricate | CH JH
-fricative | DH F S SH TH V Z ZH
-aspirate | HH
-liquid | r l 
-semivowel | W Y
+There are a few different types of ARPABETs
+
+Type | ARPABET
+---|---
+vowel | `AE AH EH IH IY OW OY UH ...`
+stop | `B D G K P T` 
+affricate | `CH JH`
+fricative | `DH F S SH TH V Z ZH`
+aspirate | `HH`
+liquid | `r l` 
+semivowel | `W Y`
 
 This tool uses the CMU pronunciation dictionary to translate words to ARPAbets. It is not perfect, but a good starting point. For more information on ARPAbet, http://www.speech.cs.cmu.edu/cgi-bin/cmudict
 
