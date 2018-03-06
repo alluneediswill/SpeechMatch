@@ -8,12 +8,12 @@ describe("SpeechMatch with strings", () => {
 
   before(() => {
     return SpeechMatch.create([
-      // "Sweet Corn",
-      // "Sweet co in",
-      // "Yourself",
-      // "Young elf",
+      "Sweet Corn",
+      "Sweet co in",
       "madeline",
-      "red wine"
+      "red wine",
+      "breed",
+      "red"
     ]).then(newMatcher => {
       matcher = newMatcher;
       return matcher;
@@ -24,24 +24,25 @@ describe("SpeechMatch with strings", () => {
     expect(matcher).to.be.ok;
   });
 
-  // it("should return exact match", () => {
-  //   expect(matcher.find("Sweet co in")).to.equal("Sweet co in");
-  // });
+  it("should return exact match", () => {
+    expect(matcher.find("Sweet co in")).to.equal("Sweet co in");
+  });
 
-  // it('should match "Sweet coin" to "Sweet corn" instead of "Sweet co in"', () => {
-  //   expect(matcher.find("Sweet coin")).to.equal("Sweet Corn");
-  // });
+  it('should match "Sweet coin" to "Sweet corn" instead of "Sweet co in"', () => {
+    expect(matcher.find("Sweet coin")).to.equal("Sweet Corn");
+  });
 
-  it('should match "red fine" to "read line" instead of "redefine"', () => {
-    expect(matcher.find("add line")).to.equal("red wine");
+  it('should match "mad line" to "red wine instead of "madeline"', () => {
+    expect(matcher.find("mad line")).to.equal("red wine");
+  });
+
+  it('should match "bread" to "red instead of "breed"', () => {
+    expect(matcher.find("bread")).to.equal("red");
   });
 });
 
 class TestItem implements MatchItem {
-  constructor(
-    public phrase: string,
-    public priority: number = 0
-  ) {}
+  constructor(public phrase: string, public priority: number = 0) {}
 
   modifier(difference: number) {
     return difference - this.priority;

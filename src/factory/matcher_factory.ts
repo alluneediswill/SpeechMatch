@@ -30,7 +30,10 @@ export class MatcherFactory {
   }
 
   initialize(): Promise<boolean[]> {
-      return Promise.all([this.loadPronunciationFile("./cmudict/cmudict-0.7b"), this.loadSymbol()]);
+    return Promise.all([
+      this.loadPronunciationFile("./cmudict/cmudict-0.7b"),
+      this.loadSymbol()
+    ]);
   }
 
   loadPronunciationFile(filePath: fs.PathLike): Promise<boolean> {
@@ -51,6 +54,7 @@ export class MatcherFactory {
   }
 
   loadSymbol(): Promise<boolean> {
+    this.symbols.set("/", "/");
     return new Promise<boolean>((resolve, reject) => {
       const lineReader = readline.createInterface({
         input: fs.createReadStream("./cmudict/cmudict.phones.txt")

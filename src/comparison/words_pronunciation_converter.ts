@@ -18,7 +18,7 @@ export class WordsPronunciationConverter {
       if (restP.length < 1) {
         return [p];
       } else {
-        return restP.map(result => [...p, ...result]);
+        return restP.map(result => [...p, "/", ...result]);
       }
     });
     return pss.reduce((c: string[][], a: string[][]) => [...c, ...a]);

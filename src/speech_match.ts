@@ -76,13 +76,14 @@ export class SpeechMatch {
   }
 
   findItem(phrase: string): MatchItem {
-    let minDiff: number = phrase.length;
+    let minDiff: number = phrase.length * 10;
     let bestCandidate: SpeechCandidate = undefined;
 
     this.wordsPronunciationConverter
       .convert(splitPhrase(phrase), this.unknownPronunciation)
       .forEach(target => {
         this.candidates.forEach(candidate => {
+          candidate.diff = [];
           candidate.arpabets.forEach(pronunciation => {
             let diff = this.pronunciationComparator.compare(
               pronunciation,
@@ -91,6 +92,7 @@ export class SpeechMatch {
             if (candidate.item.modifier) {
               diff = candidate.item.modifier(diff);
             }
+            candidate.diff.push(diff);
             if (diff < minDiff) {
               minDiff = diff;
               bestCandidate = candidate;
@@ -103,5 +105,6 @@ export class SpeechMatch {
 }
 
 class SpeechCandidate {
+  diff: number[] = [];
   constructor(public item: MatchItem, public arpabets: string[][]) {}
 }
