@@ -104,7 +104,7 @@ export class SpeechMatch {
   }
 }
 
-class SpeechCandidate {
+export class SpeechCandidate {
   diff: number[] = [];
   constructor(public item: MatchItem, public arpabets: string[][]) {}
 }

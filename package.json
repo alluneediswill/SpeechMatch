@@ -1,8 +1,9 @@
 {
   "name": "speechmatch",
   "version": "0.5.0",
-  "description": "Match words by the pronunciation instead of by alphabet",
-  "main": "parser_generate.js",
+  "description": "Match words by the pronunciations",
+  "main": "dist/speechMatch.js",
+  "types": "dist/speechMatch.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.1",
@@ -15,8 +16,24 @@
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   },
-  "author": "William Ng",
+  "author": "William Ng <ng.william.w@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alluneediswill/SpeechMatch.git"
+  },
+  "keywords": [
+    "alexa",
+    "voice",
+    "speech",
+    "fuzzy match",
+    "string match",
+    "approximate string match",
+    "pronunciation",
+    "alexa skill",
+    "google action",
+    "slot matching"
+  ],
   "scripts": {
     "start": "npm run build && node dist/fuzzy_match.js",
     "build": "npm run build-ts",
@@ -25,4 +42,5 @@
     "test": "mocha -r ts-node/register src/**/*.spec.ts",
     "tslint": "tslint -c tslint.json -p tsconfig.json"
   }
+
 }
