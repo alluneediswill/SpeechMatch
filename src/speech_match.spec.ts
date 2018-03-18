@@ -1,8 +1,8 @@
 import {
   SpeechMatch,
   MatchItem,
-  create as matcherCreate,
-  createWithItems as matcherCreateWithItems
+  createMatcher,
+  createMatcherWithItems
 } from "./speech_match";
 import { expect } from "chai";
 import "mocha";
@@ -12,7 +12,7 @@ describe("SpeechMatch with strings", () => {
   let matcher: SpeechMatch;
 
   before(() => {
-    return matcherCreate([
+    return createMatcher([
       "Sweet Corn",
       "Sweet co in",
       "madeline",
@@ -68,7 +68,7 @@ describe("SpeechMatch with MatchItems", () => {
       new TestItem("John", 0),
       new TestItem("Jon")
     ];
-    return matcherCreateWithItems(items).then(newMatcher => {
+    return createMatcherWithItems(items).then(newMatcher => {
       matcher = newMatcher;
       return matcher;
     });
@@ -93,5 +93,54 @@ describe("SpeechMatch with MatchItems", () => {
   it("should return John1 since its priority is now 100 that should override other words", () => {
     john1.priority = 100;
     expect(matcher.findItem("redefine")).to.equal(john1);
+  });
+});
+
+describe("SpeechMatch with MatchItems as example", () => {
+  let matcher: SpeechMatch;
+  let john1: TestItem;
+
+  before(() => {
+    john1 = new TestItem("John", 1);
+
+    const items: TestItem[] = [
+      new TestItem("redefine"),
+      new TestItem("read line"),
+      john1,
+      new TestItem("John", 0),
+      new TestItem("Jon")
+    ];
+    return createMatcherWithItems(items).then(newMatcher => {
+      matcher = newMatcher;
+      return matcher;
+    });
+  });
+
+  it("should select with userInput as lawn of the dad", () => {
+    const userMovies = [
+      {
+        phrase: "Dawn of the dead",
+        movieId: 543
+      },
+      {
+        phrase: "Shawn of the dead",
+        modifier: d => 0.9 * d, // User liked this movie, so it is more likely user is talking about this one
+        movieId: 1251
+      },
+      {
+        phrase: "American Dad",
+        modifier: d => 1.1 * d, // User thumbed down it, so it is less likely user is talking about it
+        movieId: 6123
+      },
+      {
+        phrase: "Dawn of the croods",
+        movieId: 25
+      }
+    ];
+
+    createMatcherWithItems(userMovies).then(matcher => {
+      const userSelection = matcher.findItem("Lawn of the dad");
+      expect((<any>userSelection).movieId).to.equal(1251);
+    });
   });
 });

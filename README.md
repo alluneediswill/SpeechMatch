@@ -49,3 +49,52 @@ In terms of comparing ARPAbets to find the closest candidate to a speech recogni
 1. symbols of the same types have lower difference, e.g. AH and EH are both vowels, B and D are both stops. Even though they are not the same symbols, they should have a lower difference than that of AH and D, for example.
 2. in a very broad stroke, symbol with similar characters sounded similar as well, like AE to AH, and SH to ZH, so any pairs of symbols sharing characters should have lower difference as well. This check would include the stress symbols too
 3. vowel is usually the strongest sound in the word and have the least chance of wrong recognition, so just as starting point, the weight of vowel is 10, semivowel 6, the rest 4. Vowel stress difference has weight of 1.
+
+---
+
+## How to use
+
+Basic usage
+```javascript
+const speechMatch = require('speechmatch');
+
+speechMatch.createMatcher([
+    "breed",
+    "red"
+]).then(matcher => {
+    let result = matcher.find("bread");
+    console.log(result);
+    // output red
+});
+```
+
+Set priority of items 
+```javascript
+const speechMatch = require('speechmatch');
+
+const userMovies = [
+    {
+        phrase: "Dawn of the dead",
+        movieId: 543
+    },
+    {
+        phrase: "Shawn of the dead",
+        modifier: d => 0.9 * d, // User liked this movie, so it is more likely user is talking about this one
+        movieId: 1251
+    },
+    {
+        phrase: "American Dad",
+        modifier: d => 1.1 * d, // User thumbed down it, so it is less likely user is talking about it
+        movieId: 6123
+    },
+    {
+        phrase: "Dawn of the croods",
+        movieId: 25
+    }
+];
+
+speechMatch.createMatcherWithItems(userMovies).then(matcher => {
+    let userSelection = matcher.findItem(userInputSlotValue);
+    replyUserWithMovie(userSelection.movieId);
+});
+```

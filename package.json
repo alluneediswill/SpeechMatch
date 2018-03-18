@@ -1,6 +1,6 @@
 {
   "name": "speechmatch",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Match words by the pronunciations",
   "main": "dist/speech_match.js",
   "types": "dist/speech_match.d.ts",

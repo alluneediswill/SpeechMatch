@@ -9,19 +9,29 @@ import { splitPhrase } from "./comparison/util";
 export interface MatchItem {
   phrase: string;
   modifier?: (n: number) => number;
+  pronunciationDiffs?: number[];
 }
 
-export function setup() {
+/** Start the loading process of pronunciation data */
+export function warmup() {
   MatcherFactory.getInstance();
 }
 
-export function create(candidates: string[]): Promise<SpeechMatch> {
+/** Create matcher with array of strings */
+export function createMatcher(candidates: string[]): Promise<SpeechMatch> {
   return MatcherFactory.getInstance().then(factory => {
     return factory.create().setCandidatesFromPhrases(candidates);
   });
 }
 
-export function createWithItems(candidates: MatchItem[]): Promise<SpeechMatch> {
+/** Create matcher with array of objects with following properties:
+ *  phrase : string to be matched
+ *  modifier : optional function (number)=>(number) that modify the difference before looking for the best candidate
+ *  pronunciationDiffs : will be written to be the numerical values of difference between the possible pronunciation permutation of the phrase and that of target
+ */
+export function createMatcherWithItems(
+  candidates: MatchItem[]
+): Promise<SpeechMatch> {
   return MatcherFactory.getInstance().then(factory => {
     return factory.create().setCandidatesFromMatchItem(candidates);
   });
@@ -33,6 +43,8 @@ export class SpeechMatch {
   unknownPronunciation: Set<string> = new Set<string>();
 
   pronunciationComparator: PronunciationEquality;
+
+  bestCandidate: SpeechCandidate = undefined;
 
   constructor(
     private wordsPronunciationConverter: WordsPronunciationConverter,
@@ -77,15 +89,17 @@ export class SpeechMatch {
     return this.findItem(phrase).phrase;
   }
 
+  /** Return object with following properties
+   *  phrase : string that was matched
+   *  pronunciationDiffs : the numerical values of difference between the possible pronunciation permutation of the phrase and that of target
+   */
   findItem(phrase: string): MatchItem {
     let minDiff: number = phrase.length * 10;
-    let bestCandidate: SpeechCandidate = undefined;
-
     this.wordsPronunciationConverter
       .convert(splitPhrase(phrase), this.unknownPronunciation)
       .forEach(target => {
         this.candidates.forEach(candidate => {
-          candidate.diff = [];
+          candidate.item.pronunciationDiffs = [];
           candidate.arpabets.forEach(pronunciation => {
             let diff = this.pronunciationComparator.compare(
               pronunciation,
@@ -94,19 +108,18 @@ export class SpeechMatch {
             if (candidate.item.modifier) {
               diff = candidate.item.modifier(diff);
             }
-            candidate.diff.push(diff);
+            candidate.item.pronunciationDiffs.push(diff);
             if (diff < minDiff) {
               minDiff = diff;
-              bestCandidate = candidate;
+              this.bestCandidate = candidate;
             }
           });
         });
       });
-    return bestCandidate.item;
+    return this.bestCandidate.item;
   }
 }
 
 export class SpeechCandidate {
-  diff: number[] = [];
   constructor(public item: MatchItem, public arpabets: string[][]) {}
 }
