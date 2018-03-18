@@ -10,6 +10,11 @@ describe("Speech matcher factory", () => {
     expect(factory).to.be.ok;
   });
 
+  it("should reuse the singleton", async () => {
+    factory = await MatcherFactory.getInstance();
+    expect(await MatcherFactory.getInstance()).to.equal(factory);
+  });
+
   it("should have at least 1000 entries of pronunciation", () => {
     expect(factory.dictionaryParser.wordPronunciations.size).to.be.above(1000);
   });

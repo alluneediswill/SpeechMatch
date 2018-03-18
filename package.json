@@ -1,9 +1,9 @@
 {
   "name": "speechmatch",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Match words by the pronunciations",
-  "main": "dist/speechMatch.js",
-  "types": "dist/speechMatch.d.ts",
+  "main": "dist/speech_match.js",
+  "types": "dist/speech_match.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.1",
@@ -35,8 +35,7 @@
     "slot matching"
   ],
   "scripts": {
-    "start": "npm run build && node dist/fuzzy_match.js",
-    "build": "npm run build-ts",
+    "build": "npm run prettier && npm run test && npm run tslint && npm run build-ts",
     "build-ts": "tsc",
     "prettier": "prettier --write \"{src/**/*,*}.ts\"",
     "test": "mocha -r ts-node/register src/**/*.spec.ts",

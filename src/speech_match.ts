@@ -11,6 +11,22 @@ export interface MatchItem {
   modifier?: (n: number) => number;
 }
 
+export function setup() {
+  MatcherFactory.getInstance();
+}
+
+export function create(candidates: string[]): Promise<SpeechMatch> {
+  return MatcherFactory.getInstance().then(factory => {
+    return factory.create().setCandidatesFromPhrases(candidates);
+  });
+}
+
+export function createWithItems(candidates: MatchItem[]): Promise<SpeechMatch> {
+  return MatcherFactory.getInstance().then(factory => {
+    return factory.create().setCandidatesFromMatchItem(candidates);
+  });
+}
+
 export class SpeechMatch {
   candidates: SpeechCandidate[] = [];
 
@@ -25,23 +41,7 @@ export class SpeechMatch {
     this.pronunciationComparator = new PronunciationEquality(symbolComparator);
   }
 
-  static create(candidates: string[]): Promise<SpeechMatch> {
-    return MatcherFactory.getInstance().then(factory => {
-      const matcher = factory.create();
-      matcher.candidates = matcher.candidatesFromPhrases(candidates);
-      return matcher;
-    });
-  }
-
-  static createWithItems(candidates: MatchItem[]): Promise<SpeechMatch> {
-    return MatcherFactory.getInstance().then(factory => {
-      const matcher = factory.create();
-      matcher.candidates = matcher.candidatesFromMatchItem(candidates);
-      return matcher;
-    });
-  }
-
-  private candidatesFromPhrases(phrases: string[]): SpeechCandidate[] {
+  setCandidatesFromPhrases(phrases: string[]): SpeechMatch {
     const phrasesCandidates: SpeechCandidate[] = [];
     phrases.forEach(phrase => {
       const arpabets = this.wordsPronunciationConverter.convert(
@@ -50,10 +50,11 @@ export class SpeechMatch {
       );
       phrasesCandidates.push(new SpeechCandidate({ phrase: phrase }, arpabets));
     });
-    return phrasesCandidates;
+    this.candidates = phrasesCandidates;
+    return this;
   }
 
-  private candidatesFromMatchItem(matchItems: MatchItem[]): SpeechCandidate[] {
+  setCandidatesFromMatchItem(matchItems: MatchItem[]): SpeechMatch {
     const phrasesCandidates: SpeechCandidate[] = [];
     matchItems.forEach(item => {
       const arpabets = this.wordsPronunciationConverter.convert(
@@ -62,7 +63,8 @@ export class SpeechMatch {
       );
       phrasesCandidates.push(new SpeechCandidate(item, arpabets));
     });
-    return phrasesCandidates;
+    this.candidates = phrasesCandidates;
+    return this;
   }
 
   getUnknownCandidatesInJSON(): string {

@@ -3,6 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const matcher_factory_1 = require("./factory/matcher_factory");
 const pronunciation_equality_1 = require("./comparison/pronunciation_equality");
 const util_1 = require("./comparison/util");
+function setup() {
+    matcher_factory_1.MatcherFactory.getInstance();
+}
+exports.setup = setup;
+function create(candidates) {
+    return matcher_factory_1.MatcherFactory.getInstance().then(factory => {
+        return factory.create().setCandidatesFromPhrases(candidates);
+    });
+}
+exports.create = create;
+function createWithItems(candidates) {
+    return matcher_factory_1.MatcherFactory.getInstance().then(factory => {
+        return factory.create().setCandidatesFromMatchItem(candidates);
+    });
+}
+exports.createWithItems = createWithItems;
 class SpeechMatch {
     constructor(wordsPronunciationConverter, symbolComparator) {
         this.wordsPronunciationConverter = wordsPronunciationConverter;
@@ -11,35 +27,23 @@ class SpeechMatch {
         this.unknownPronunciation = new Set();
         this.pronunciationComparator = new pronunciation_equality_1.PronunciationEquality(symbolComparator);
     }
-    static create(candidates) {
-        return matcher_factory_1.MatcherFactory.getInstance().then(factory => {
-            const matcher = factory.create();
-            matcher.candidates = matcher.candidatesFromPhrases(candidates);
-            return matcher;
-        });
-    }
-    static createWithItems(candidates) {
-        return matcher_factory_1.MatcherFactory.getInstance().then(factory => {
-            const matcher = factory.create();
-            matcher.candidates = matcher.candidatesFromMatchItem(candidates);
-            return matcher;
-        });
-    }
-    candidatesFromPhrases(phrases) {
+    setCandidatesFromPhrases(phrases) {
         const phrasesCandidates = [];
         phrases.forEach(phrase => {
             const arpabets = this.wordsPronunciationConverter.convert(util_1.splitPhrase(phrase), this.unknownPronunciation);
             phrasesCandidates.push(new SpeechCandidate({ phrase: phrase }, arpabets));
         });
-        return phrasesCandidates;
+        this.candidates = phrasesCandidates;
+        return this;
     }
-    candidatesFromMatchItem(matchItems) {
+    setCandidatesFromMatchItem(matchItems) {
         const phrasesCandidates = [];
         matchItems.forEach(item => {
             const arpabets = this.wordsPronunciationConverter.convert(util_1.splitPhrase(item.phrase), this.unknownPronunciation);
             phrasesCandidates.push(new SpeechCandidate(item, arpabets));
         });
-        return phrasesCandidates;
+        this.candidates = phrasesCandidates;
+        return this;
     }
     getUnknownCandidatesInJSON() {
         return JSON.stringify({

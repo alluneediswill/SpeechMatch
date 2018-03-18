@@ -1,21 +1,20 @@
 import * as readline from "readline";
 import * as fs from "fs";
+import * as path from "path";
 import { SpeechMatch } from "../speech_match";
 import { DictionaryParser } from "./dictionary_parser";
 import { WordsPronunciationConverter } from "../comparison/words_pronunciation_converter";
 import { SymbolComparator } from "../comparison/symbol_comparator";
 
 export class MatcherFactory {
-  static singleton: MatcherFactory;
+  static loadingSingleton: Promise<MatcherFactory>;
 
   static getInstance(): Promise<MatcherFactory> {
-    if (MatcherFactory.singleton) {
-      return Promise.resolve(MatcherFactory.singleton);
+    if (MatcherFactory.loadingSingleton) {
+      return MatcherFactory.loadingSingleton;
     }
-    const factory = new MatcherFactory();
-    return factory.initialize().then(() => {
-      return factory;
-    });
+    MatcherFactory.loadingSingleton = new MatcherFactory().initialize();
+    return MatcherFactory.loadingSingleton;
   }
 
   dictionaryParser: DictionaryParser = new DictionaryParser();
@@ -29,15 +28,17 @@ export class MatcherFactory {
     return new SpeechMatch(pronunciationConverter, symbolComparator);
   }
 
-  initialize(): Promise<boolean[]> {
+  initialize(): Promise<MatcherFactory> {
     return Promise.all([
-      this.loadPronunciationFile("./cmudict/cmudict-0.7b"),
-      this.loadSymbol()
-    ]);
+      this.loadPronunciationFile(
+        path.join(__dirname, "../../cmudict/cmudict-0.7b")
+      ),
+      this.loadSymbol(path.join(__dirname, "../../cmudict/cmudict.phones.txt"))
+    ]).then(() => this);
   }
 
-  loadPronunciationFile(filePath: fs.PathLike): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  loadPronunciationFile(filePath: fs.PathLike): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       const lineReader = readline.createInterface({
         input: fs.createReadStream(filePath)
       });
@@ -48,16 +49,16 @@ export class MatcherFactory {
         }.bind(this)
       );
       lineReader.on("close", function() {
-        resolve(true);
+        resolve();
       });
     });
   }
 
-  loadSymbol(): Promise<boolean> {
+  loadSymbol(filePath: fs.PathLike): Promise<void> {
     this.symbols.set("/", "/");
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const lineReader = readline.createInterface({
-        input: fs.createReadStream("./cmudict/cmudict.phones.txt")
+        input: fs.createReadStream(filePath)
       });
       lineReader.on(
         "line",
@@ -68,7 +69,7 @@ export class MatcherFactory {
         }.bind(this)
       );
       lineReader.on("close", function() {
-        resolve(true);
+        resolve();
       });
     });
   }

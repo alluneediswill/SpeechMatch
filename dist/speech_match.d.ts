@@ -5,6 +5,9 @@ export interface MatchItem {
     phrase: string;
     modifier?: (n: number) => number;
 }
+export declare function setup(): void;
+export declare function create(candidates: string[]): Promise<SpeechMatch>;
+export declare function createWithItems(candidates: MatchItem[]): Promise<SpeechMatch>;
 export declare class SpeechMatch {
     private wordsPronunciationConverter;
     private symbolComparator;
@@ -12,10 +15,8 @@ export declare class SpeechMatch {
     unknownPronunciation: Set<string>;
     pronunciationComparator: PronunciationEquality;
     constructor(wordsPronunciationConverter: WordsPronunciationConverter, symbolComparator: SymbolComparator);
-    static create(candidates: string[]): Promise<SpeechMatch>;
-    static createWithItems(candidates: MatchItem[]): Promise<SpeechMatch>;
-    private candidatesFromPhrases(phrases);
-    private candidatesFromMatchItem(matchItems);
+    setCandidatesFromPhrases(phrases: string[]): SpeechMatch;
+    setCandidatesFromMatchItem(matchItems: MatchItem[]): SpeechMatch;
     getUnknownCandidatesInJSON(): string;
     find(phrase: string): string;
     findItem(phrase: string): MatchItem;

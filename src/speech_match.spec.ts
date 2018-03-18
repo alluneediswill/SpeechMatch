@@ -1,4 +1,9 @@
-import { SpeechMatch, MatchItem } from "./speech_match";
+import {
+  SpeechMatch,
+  MatchItem,
+  create as matcherCreate,
+  createWithItems as matcherCreateWithItems
+} from "./speech_match";
 import { expect } from "chai";
 import "mocha";
 import { MatcherFactory } from "./factory/matcher_factory";
@@ -7,7 +12,7 @@ describe("SpeechMatch with strings", () => {
   let matcher: SpeechMatch;
 
   before(() => {
-    return SpeechMatch.create([
+    return matcherCreate([
       "Sweet Corn",
       "Sweet co in",
       "madeline",
@@ -63,7 +68,7 @@ describe("SpeechMatch with MatchItems", () => {
       new TestItem("John", 0),
       new TestItem("Jon")
     ];
-    return SpeechMatch.createWithItems(items).then(newMatcher => {
+    return matcherCreateWithItems(items).then(newMatcher => {
       matcher = newMatcher;
       return matcher;
     });
